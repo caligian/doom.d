@@ -1,6 +1,5 @@
 ;;; test.*el -*- lexical-binding: t; -*-
 (provide 'repl)
-(require 'general)
 
 (defvar repl-commands '((ruby-mode . ("/usr/bin/irb" "--inf-ruby-mode"))
                         (racket-mode . "/usr/bin/racket")
@@ -211,6 +210,14 @@
                       ("k" repl::ivy::kill "Kill")
                       ("i" repl::ivy::send-string "Send string"))))
 
+(defun repl/send-sexp nil
+  (interactive)
+  (repl::send 'sexp))
+
+(defun repl/send-defun nil
+  (interactive)
+  (repl::send 'defun))
+
 (defun repl/start nil
   (interactive)
   (repl::start-process))
@@ -307,27 +314,115 @@
         (when (> (length s) 0)
           (repl::send s 'sh-mode)))))
 
-(map! :leader :n "r&" #'repl/shell-start)
-(map! :leader :n "rQ" #'repl/shell-kill)
-(map! :leader :n "rS" #'repl/shell-split)
-(map! :leader :n "rV" #'repl/shell-vsplit)
-(map! :leader :n "rK" #'repl/shell-hide)
-(map! :leader :n "rL" #'repl/shell-send-line)
-(map! :leader :v "rR" #'repl/shell-send-region)
-(map! :leader :n "rB" #'repl/shell-send-buffer)
-(map! :leader :n "r>" #'repl/shell-send-till-point)
-(map! :leader :n "rI" #'repl/shell-send-string)
-(map! :leader :n "rC" #'repl/shell-send-eof)
-(map! :leader :n "r!" #'repl/start)
-(map! :leader :n "rq" #'repl/kill)
-(map! :leader :n "rs" #'repl/split)
-(map! :leader :n "rv" #'repl/vsplit)
-(map! :leader :n "rk" #'repl/hide)
-(map! :leader :n "rl" #'repl/send-line)
-(map! :leader :v "rr" #'repl/send-region)
-(map! :leader :n "rb" #'repl/send-buffer)
-(map! :leader :n "r." #'repl/send-till-point)
-(map! :leader :n "ri" #'repl/send-string)
-(map! :leader :n "rc" #'repl/send-eof)
-(map! :leader :n "r," #'repl::ivy/running)
-(map! :leader :n "r`" #'repl::ivy/start)
+(defun repl/shell-send-sexp nil
+  (interactive)
+  (repl::send 'sexp 'sh-mode))
+
+(defun repl/shell-send-sexp nil
+  (interactive)
+  (repl::send 'defun 'sh-mode))
+
+(defun repl/turn-on-evil-keybindings nil
+  (interactive)
+  (map! :mode repl-shell-mode-map :leader :n "r&" #'repl/shell-start)
+  (map! :mode repl-shell-mode-map :leader :n "rQ" #'repl/shell-kill)
+  (map! :mode repl-shell-mode-map :leader :n "rS" #'repl/shell-split)
+  (map! :mode repl-shell-mode-map :leader :n "rV" #'repl/shell-vsplit)
+  (map! :mode repl-shell-mode-map :leader :n "rK" #'repl/shell-hide)
+  (map! :mode repl-shell-mode-map :leader :n "rL" #'repl/shell-send-line)
+  (map! :mode repl-shell-mode-map :leader :v "rR" #'repl/shell-send-region)
+  (map! :mode repl-shell-mode-map :leader :n "rB" #'repl/shell-send-buffer)
+  (map! :mode repl-shell-mode-map :leader :n "r>" #'repl/shell-send-till-point)
+  (map! :mode repl-shell-mode-map :leader :n "rI" #'repl/shell-send-string)
+  (map! :mode repl-shell-mode-map :leader :n "rC" #'repl/shell-send-eof)
+  (map! :mode repl-shell-mode-map :leader :n "rE" #'repl/shell-send-sexp)
+  (map! :mode repl-shell-mode-map :leader :n "rD" #'repl/shell-send-defun)
+  (map! :mode repl-mode-map :leader :n "r!" #'repl/start)
+  (map! :mode repl-mode-map :leader :n "rq" #'repl/kill)
+  (map! :mode repl-mode-map :leader :n "rs" #'repl/split)
+  (map! :mode repl-mode-map :leader :n "rv" #'repl/vsplit)
+  (map! :mode repl-mode-map :leader :n "rk" #'repl/hide)
+  (map! :mode repl-mode-map :leader :n "rl" #'repl/send-line)
+  (map! :mode repl-mode-map :leader :v "rr" #'repl/send-region)
+  (map! :mode repl-mode-map :leader :n "rb" #'repl/send-buffer)
+  (map! :mode repl-mode-map :leader :n "r." #'repl/send-till-point)
+  (map! :mode repl-mode-map :leader :n "ri" #'repl/send-string)
+  (map! :mode repl-mode-map :leader :n "rc" #'repl/send-eof)
+  (map! :mode repl-mode-map :leader :n "rd" #'repl/send-defun)
+  (map! :mode repl-mode-map :leader :n "re" #'repl/send-sexp)
+  (map! :mode repl-mode-map :leader :n "r," #'repl::ivy/running)
+  (map! :mode repl-mode-map :leader :n "r`" #'repl::ivy/start))
+
+(defun repl/turn-off-evil-keybindings nil
+  (interactive)
+  (map! :mode repl-shell-mode-map :leader :n "r&" nil)
+  (map! :mode repl-shell-mode-map :leader :n "rQ" nil)
+  (map! :mode repl-shell-mode-map :leader :n "rS" nil)
+  (map! :mode repl-shell-mode-map :leader :n "rV" nil)
+  (map! :mode repl-shell-mode-map :leader :n "rK" nil)
+  (map! :mode repl-shell-mode-map :leader :n "rL" nil)
+  (map! :mode repl-shell-mode-map :leader :v "rR" nil)
+  (map! :mode repl-shell-mode-map :leader :n "rB" nil)
+  (map! :mode repl-shell-mode-map :leader :n "r>" nil)
+  (map! :mode repl-shell-mode-map :leader :n "rI" nil)
+  (map! :mode repl-shell-mode-map :leader :n "rC" nil)
+  (map! :mode repl-shell-mode-map :leader :n "rE" nil)
+  (map! :mode repl-shell-mode-map :leader :n "rD" nil)
+  (map! :mode repl-mode-map :leader :n "r!" nil)
+  (map! :mode repl-mode-map :leader :n "rq" nil)
+  (map! :mode repl-mode-map :leader :n "rs" nil)
+  (map! :mode repl-mode-map :leader :n "rv" nil)
+  (map! :mode repl-mode-map :leader :n "rk" nil)
+  (map! :mode repl-mode-map :leader :n "rl" nil)
+  (map! :mode repl-mode-map :leader :v "rr" nil)
+  (map! :mode repl-mode-map :leader :n "rb" nil)
+  (map! :mode repl-mode-map :leader :n "r." nil)
+  (map! :mode repl-mode-map :leader :n "ri" nil)
+  (map! :mode repl-mode-map :leader :n "rc" nil)
+  (map! :mode repl-mode-map :leader :n "rd" nil)
+  (map! :mode repl-mode-map :leader :n "re" nil)
+  (map! :mode repl-mode-map :leader :n "r," nil)
+  (map! :mode repl-mode-map :leader :n "r`" nil))
+
+(defvar repl-shell-mode-map (let ((map (make-sparse-keymap)))
+                              (define-key map (kbd "Q") #'repl/shell-kill)
+                              (define-key map (kbd "K") #'repl/shell-hide)
+                              (define-key map (kbd "L") #'repl/shell-send-line)
+                              (define-key map (kbd "R") #'repl/shell-send-region)
+                              (define-key map (kbd "B") #'repl/shell-send-buffer)
+                              (define-key map (kbd "D") #'repl/shell-send-defun)
+                              (define-key map (kbd ">") #'repl/shell-send-till-point)
+                              (define-key map (kbd "S") #'repl/shell-split)
+                              (define-key map (kbd "V") #'repl/shell-vsplit)
+                              map))
+
+(defvar repl-mode-map (let ((map (make-sparse-keymap)))
+                        (define-key map (kbd "q") #'repl/kill)
+                        (define-key map (kbd "k") #'repl/hide)
+                        (define-key map (kbd "l") #'repl/send-line)
+                        (define-key map (kbd "r") #'repl/send-region)
+                        (define-key map (kbd "b") #'repl/send-buffer)
+                        (define-key map (kbd "d") #'repl/send-defun)
+                        (define-key map (kbd ".") #'repl/send-till-point)
+                        (define-key map (kbd "s") #'repl/split)
+                        (define-key map (kbd "v") #'repl/vsplit)
+                        map))
+
+(define-minor-mode repl-mode
+  "Basic REPL extension for emacs"
+  :lighter " repl"
+  :keymap repl-mode-map
+  (if (and repl-mode (repl::get :cmd))
+      (repl/start)
+    (progn (setq repl-mode nil)
+           (message "No command defined for major %s" major-mode))))
+
+(define-minor-mode repl-shell-mode
+  "Basic REPL extension for emacs"
+  :lighter " repl-shell"
+  :keymap repl-shell-mode-map
+  (if repl-shell-mode
+      (repl/shell-start)
+    (setq repl-shell-mode nil)))
+
+; LISP Syntax
